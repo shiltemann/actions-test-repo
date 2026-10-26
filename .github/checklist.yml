@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    types: [edited, opened, reopened, synchronize]
+  issue_comment:
+
+# cancel old edit events being processed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+name: Checkmate
+jobs:
+  validate-checklists:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Checklists
+        uses: roryq/checkmate@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          paths: |
+            **/*.*: |
+              - I have read and complied with the GTN's [AI Policy](https://github.com/galaxyproject/training-material/blob/main/AI-policy.md)
+              - I have checked that all images in this PR are allowed to be re-hosted in the GTN (or there are no images in this PR)
